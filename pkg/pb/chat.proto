@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package chat;
+
+option go_package = "./pkg/pb";
+
+service ChatService {
+  rpc CreateChat(CreateChatRequest) returns (CreateChatResponse) {}
+  rpc FindChat(FindChatRequest) returns (FindChatResponse) {}
+  rpc DeleteChat(DeleteChatRequest) returns (DeleteChatResponse) {}
+}
+
+// CreateChat
+
+message CreateChatRequest {
+  int64 user1ID = 1;
+  int64 user2ID = 2;
+}
+
+message CreateChatResponse {
+  int64 status = 1;
+  string error = 2;
+  int64 chatId = 3;
+}
+
+// FindChat
+
+message FindChatData {
+  int64 chatId = 1;
+}
+
+message FindChatRequest {
+  int64 user1Id = 1;
+  int64 user2Id = 2;
+}
+
+message FindChatResponse {
+  int64 status = 1;
+  string error = 2;
+  FindChatData data = 3;
+}
+
+// DeleteChat
+
+message DeleteChatRequest {
+  int64 chatId = 1;
+}
+
+message DeleteChatResponse {
+  int64 status = 1;
+  string error = 2;
+}
