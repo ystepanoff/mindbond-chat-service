@@ -19,7 +19,10 @@ func Init(url string) Handler {
 		log.Fatalln(err)
 	}
 
-	if err := db.AutoMigrate(&models.Chat{}); err != nil {
+	if err := db.AutoMigrate(
+		&models.Chat{},
+		&models.Message{},
+	); err != nil {
 		log.Fatalln(err)
 	}
 

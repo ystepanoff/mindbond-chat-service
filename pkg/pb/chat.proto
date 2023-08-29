@@ -8,6 +8,7 @@ service ChatService {
   rpc CreateChat(CreateChatRequest) returns (CreateChatResponse) {}
   rpc FindChat(FindChatRequest) returns (FindChatResponse) {}
   rpc DeleteChat(DeleteChatRequest) returns (DeleteChatResponse) {}
+  rpc AddMessage(AddMessageRequest) returns (AddMessageResponse) {}
 }
 
 // CreateChat
@@ -47,6 +48,21 @@ message DeleteChatRequest {
 }
 
 message DeleteChatResponse {
+  int64 status = 1;
+  string error = 2;
+}
+
+// AddMessage
+
+message AddMessageRequest {
+  int64 userFromId = 1;
+  string userFromLanguage = 2;
+  int64 userToId = 3;
+  string userToLanguage = 4;
+  string message = 5;
+}
+
+message AddMessageResponse {
   int64 status = 1;
   string error = 2;
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flotta-home/mindbond/chat-service/pkg/client"
 	"fmt"
 	"log"
 	"net"
@@ -20,6 +21,7 @@ func main() {
 	}
 
 	h := db.Init(c.DBUrl)
+	translator := client.InitTranslatorServiceClient(c.TranslatorServiceUrl)
 
 	lis, err := net.Listen("tcp", c.Port)
 
@@ -30,7 +32,8 @@ func main() {
 	fmt.Println("Chat service on", c.Port)
 
 	s := services.Server{
-		H: h,
+		H:          h,
+		Translator: translator,
 	}
 
 	grpcServer := grpc.NewServer()
