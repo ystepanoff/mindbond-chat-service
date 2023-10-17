@@ -1,5 +1,8 @@
 proto:
-	protoc pkg/pb/*.proto --go_out=plugins=grpc:.
+	git clone git@flotta-home:mindbond/proto.git
+	protoc proto/chat.proto --go_out=plugins=grpc:./pkg/
+	protoc proto/translator.proto --go_out=plugins=grpc:./pkg/
+	rm -rf proto/
 
 chat-service:
 	go run cmd/main.go
