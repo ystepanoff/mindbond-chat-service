@@ -20,6 +20,7 @@ func Init(url string) Handler {
 	}
 
 	if err := db.AutoMigrate(
+		&models.Contact{},
 		&models.Chat{},
 		&models.Message{},
 	); err != nil {

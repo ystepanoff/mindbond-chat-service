@@ -2,6 +2,11 @@ package models
 
 import "gorm.io/gorm"
 
+type Contact struct {
+	UserId    int64 `json:"userId" gorm:"primaryKey"`
+	ContactId int64 `json:"contactId" gorm:"primaryKey"`
+}
+
 type Chat struct {
 	Id             int64 `json:"id" gorm:"primaryKey"`
 	User1ID        int64 `json:"user1Id"`
