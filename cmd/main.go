@@ -21,7 +21,8 @@ func main() {
 	}
 
 	h := db.Init(c.DBUrl)
-	translator := client.InitTranslatorServiceClient(c.TranslatorServiceUrl)
+	authClient := client.InitAuthServiceClient(c.AuthServiceUrl)
+	translatorClient := client.InitTranslatorServiceClient(c.TranslatorServiceUrl)
 
 	lis, err := net.Listen("tcp", c.Port)
 
@@ -32,8 +33,9 @@ func main() {
 	fmt.Println("Chat service on", c.Port)
 
 	s := services.Server{
-		H:          h,
-		Translator: translator,
+		H:                h,
+		AuthClient:       authClient,
+		TranslatorClient: translatorClient,
 	}
 
 	grpcServer := grpc.NewServer()

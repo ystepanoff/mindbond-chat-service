@@ -5,6 +5,7 @@ import "github.com/spf13/viper"
 type Config struct {
 	Port                 string `mapstructure:"PORT"`
 	DBUrl                string `mapstructure:"DB_URL"`
+	AuthServiceUrl       string `mapstructure:"AUTH_SERVICE_URL"`
 	TranslatorServiceUrl string `mapstructure:"TRANSLATOR_SERVICE_URL"`
 }
 

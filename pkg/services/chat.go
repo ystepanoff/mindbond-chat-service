@@ -24,7 +24,7 @@ func (s *Server) AddContact(ctx context.Context, req *pb.AddContactRequest) (*pb
 			Error:  fmt.Sprintf("Validation error: %s", result.Status),
 		}, nil
 	}
-	contactUser, err := s.AuthClient.LookupByHandle(result.Handle)
+	contactUser, err := s.AuthClient.LookupByHandle(req.Handle)
 	if err != nil {
 		return &pb.AddContactResponse{
 			Status: http.StatusInternalServerError,
@@ -34,7 +34,7 @@ func (s *Server) AddContact(ctx context.Context, req *pb.AddContactRequest) (*pb
 	if contactUser.Status != http.StatusOK {
 		return &pb.AddContactResponse{
 			Status: http.StatusInternalServerError,
-			Error:  fmt.Sprintf("Lookup error: %s", contact.Error),
+			Error:  fmt.Sprintf("Lookup error: %s", contactUser.Error),
 		}, nil
 	}
 	contact.UserId = req.UserId
@@ -58,7 +58,7 @@ func (s *Server) RemoveContact(ctx context.Context, req *pb.RemoveContactRequest
 			Error:  fmt.Sprintf("Validation error: %s", result.Status),
 		}, nil
 	}
-	contactUser, err := s.AuthClient.LookupByHandle(result.Handle)
+	contactUser, err := s.AuthClient.LookupByHandle(req.Handle)
 	if err != nil || contactUser.Status != http.StatusOK {
 		return &pb.RemoveContactResponse{
 			Status: http.StatusInternalServerError,
@@ -82,10 +82,33 @@ func (s *Server) RemoveContact(ctx context.Context, req *pb.RemoveContactRequest
 	}, nil
 }
 
+func (s *Server) FetchContacts(req *pb.FetchContactsRequest, stream pb.ChatService_FetchContactsServer) error {
+	var contacts []models.Contact
+	if result, err := s.AuthClient.Validate(req.Token); err != nil || result.Status != http.StatusOK {
+		return fmt.Errorf("Validation error: %s", result.Status)
+	}
+	if result := s.H.DB.Find(&contacts, req.UserId); result.Error != nil {
+		return fmt.Errorf("DB error: %s", result.Error.Error())
+	}
+	for _, contact := range contacts {
+		contactUser, err := s.AuthClient.LookupById(contact.ContactId)
+		if err != nil || contactUser.Status != http.StatusOK {
+			return fmt.Errorf("Lookup error: %s", contactUser.Status)
+		}
+		if err := stream.Send(&pb.UserContact{
+			UserId: contactUser.UserId,
+			Handle: contactUser.Handle,
+		}); err != nil {
+			return fmt.Errorf("Stream error: %s", err)
+		}
+	}
+	return nil
+}
+
 func (s *Server) CreateChat(ctx context.Context, req *pb.CreateChatRequest) (*pb.CreateChatResponse, error) {
 	var chat models.Chat
-	chat.User1ID = req.User1ID
-	chat.User2ID = req.User2ID
+	chat.User1ID = req.User1Id
+	chat.User2ID = req.User2Id
 	if result := s.H.DB.Create(&chat); result.Error != nil {
 		return &pb.CreateChatResponse{
 			Status: http.StatusConflict,
