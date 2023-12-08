@@ -11,8 +11,75 @@ import (
 )
 
 type Server struct {
-	H          db.Handler
-	Translator client.TranslatorServiceClient
+	H                db.Handler
+	AuthClient       client.AuthServiceClient
+	TranslatorClient client.TranslatorServiceClient
+}
+
+func (s *Server) AddContact(ctx context.Context, req *pb.AddContactRequest) (*pb.AddContactResponse, error) {
+	var contact models.Contact
+	if result, err := s.AuthClient.Validate(req.Token); err != nil || result.Status != http.StatusOK {
+		return &pb.AddContactResponse{
+			Status: http.StatusInternalServerError,
+			Error:  fmt.Sprintf("Validation error: %s", result.Status),
+		}, nil
+	}
+	contactUser, err := s.AuthClient.LookupByHandle(result.Handle)
+	if err != nil {
+		return &pb.AddContactResponse{
+			Status: http.StatusInternalServerError,
+			Error:  fmt.Sprintf("Lookup error: %s", err),
+		}, nil
+	}
+	if contactUser.Status != http.StatusOK {
+		return &pb.AddContactResponse{
+			Status: http.StatusInternalServerError,
+			Error:  fmt.Sprintf("Lookup error: %s", contact.Error),
+		}, nil
+	}
+	contact.UserId = req.UserId
+	contact.ContactId = contactUser.UserId
+	if result := s.H.DB.Create(&contact); result.Error != nil {
+		return &pb.AddContactResponse{
+			Status: http.StatusConflict,
+			Error:  result.Error.Error(),
+		}, nil
+	}
+	return &pb.AddContactResponse{
+		Status: http.StatusCreated,
+	}, nil
+}
+
+func (s *Server) RemoveContact(ctx context.Context, req *pb.RemoveContactRequest) (*pb.RemoveContactResponse, error) {
+	var contact models.Contact
+	if result, err := s.AuthClient.Validate(req.Token); err != nil || result.Status != http.StatusOK {
+		return &pb.RemoveContactResponse{
+			Status: http.StatusInternalServerError,
+			Error:  fmt.Sprintf("Validation error: %s", result.Status),
+		}, nil
+	}
+	contactUser, err := s.AuthClient.LookupByHandle(result.Handle)
+	if err != nil || contactUser.Status != http.StatusOK {
+		return &pb.RemoveContactResponse{
+			Status: http.StatusInternalServerError,
+			Error:  fmt.Sprintf("Lookup error: %s", contactUser.Status),
+		}, nil
+	}
+	if result := s.H.DB.First(&contact, req.UserId, contactUser.UserId); result.Error != nil {
+		return &pb.RemoveContactResponse{
+			Status: http.StatusNotFound,
+			Error:  result.Error.Error(),
+		}, nil
+	}
+	if result := s.H.DB.Delete(&contact); result.Error != nil {
+		return &pb.RemoveContactResponse{
+			Status: http.StatusInternalServerError,
+			Error:  result.Error.Error(),
+		}, nil
+	}
+	return &pb.RemoveContactResponse{
+		Status: http.StatusOK,
+	}, nil
 }
 
 func (s *Server) CreateChat(ctx context.Context, req *pb.CreateChatRequest) (*pb.CreateChatResponse, error) {
@@ -93,7 +160,7 @@ func (s *Server) AddMessage(ctx context.Context, req *pb.AddMessageRequest) (*pb
 		}, nil
 	}
 	message.Original = req.Message
-	result, err := s.Translator.Translate(req.Message, req.UserFromLanguage, req.UserToLanguage)
+	result, err := s.TranslatorClient.Translate(req.Message, req.UserFromLanguage, req.UserToLanguage)
 	if err != nil {
 		return &pb.AddMessageResponse{
 			Status: http.StatusBadRequest,
