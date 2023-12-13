@@ -37,6 +37,12 @@ func (s *Server) AddContact(ctx context.Context, req *pb.AddContactRequest) (*pb
 			Error:  fmt.Sprintf("Lookup error: %s", contactUser.Error),
 		}, nil
 	}
+	if req.UserId == contactUser.UserId {
+		return &pb.AddContactResponse{
+			Status: http.StatusBadRequest,
+			Error:  "You cannot add yourself as a contact",
+		}, nil
+	}
 	contact.UserId = req.UserId
 	contact.ContactId = contactUser.UserId
 	if result := s.H.DB.Create(&contact); result.Error != nil {
