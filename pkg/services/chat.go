@@ -88,27 +88,38 @@ func (s *Server) RemoveContact(ctx context.Context, req *pb.RemoveContactRequest
 	}, nil
 }
 
-func (s *Server) FetchContacts(req *pb.FetchContactsRequest, stream pb.ChatService_FetchContactsServer) error {
+func (s *Server) FetchContacts(ctx context.Context, req *pb.FetchContactsRequest) (*pb.FetchContactsResponse, error) {
 	var contacts []models.Contact
+	var responseContacts []*pb.UserContact
 	if result, err := s.AuthClient.Validate(req.Token); err != nil || result.Status != http.StatusOK {
-		return fmt.Errorf("Validation error: %s", result.Status)
+		return &pb.FetchContactsResponse{
+			Status: http.StatusUnauthorized,
+			Error:  fmt.Sprintf("Validation error: %s", result.Status),
+		}, nil
 	}
 	if result := s.H.DB.Find(&contacts, req.UserId); result.Error != nil {
-		return fmt.Errorf("DB error: %s", result.Error.Error())
+		return &pb.FetchContactsResponse{
+			Status: http.StatusNotFound,
+			Error:  fmt.Sprintf("DB error: %s", result.Error.Error()),
+		}, nil
 	}
 	for _, contact := range contacts {
 		contactUser, err := s.AuthClient.LookupById(contact.ContactId)
 		if err != nil || contactUser.Status != http.StatusOK {
-			return fmt.Errorf("Lookup error: %s", contactUser.Status)
+			return &pb.FetchContactsResponse{
+				Status: http.StatusInternalServerError,
+				Error:  fmt.Sprintf("Lookup error: %s", contactUser.Status),
+			}, nil
 		}
-		if err := stream.Send(&pb.UserContact{
+		responseContacts = append(responseContacts, &pb.UserContact{
 			UserId: contactUser.UserId,
 			Handle: contactUser.Handle,
-		}); err != nil {
-			return fmt.Errorf("Stream error: %s", err)
-		}
+		})
 	}
-	return nil
+	return &pb.FetchContactsResponse{
+		Status:   http.StatusOK,
+		Contacts: responseContacts,
+	}, nil
 }
 
 func (s *Server) CreateChat(ctx context.Context, req *pb.CreateChatRequest) (*pb.CreateChatResponse, error) {
