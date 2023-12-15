@@ -5,6 +5,7 @@ import "gorm.io/gorm"
 type Contact struct {
 	UserId    int64 `json:"userId" gorm:"primaryKey"`
 	ContactId int64 `json:"contactId" gorm:"primaryKey"`
+	Approved  bool  `json:"approved" gorm:"not null,default:false"`
 }
 
 type Chat struct {

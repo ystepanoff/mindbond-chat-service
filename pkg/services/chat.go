@@ -7,6 +7,7 @@ import (
 	"flotta-home/mindbond/chat-service/pkg/models"
 	pb "flotta-home/mindbond/chat-service/pkg/pb"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -18,6 +19,7 @@ type Server struct {
 
 func (s *Server) AddContact(ctx context.Context, req *pb.AddContactRequest) (*pb.AddContactResponse, error) {
 	var contact models.Contact
+	var symmetricContact models.Contact
 	if result, err := s.AuthClient.Validate(req.Token); err != nil || result.Status != http.StatusOK {
 		return &pb.AddContactResponse{
 			Status: http.StatusInternalServerError,
@@ -45,11 +47,19 @@ func (s *Server) AddContact(ctx context.Context, req *pb.AddContactRequest) (*pb
 	}
 	contact.UserId = req.UserId
 	contact.ContactId = contactUser.UserId
+	contact.Approved = true
 	if result := s.H.DB.Create(&contact); result.Error != nil {
 		return &pb.AddContactResponse{
 			Status: http.StatusConflict,
 			Error:  result.Error.Error(),
 		}, nil
+	}
+	symmetricContact.UserId = contactUser.UserId
+	symmetricContact.ContactId = req.UserId
+	symmetricContact.Approved = false
+	if result := s.H.DB.Create(&symmetricContact); result.Error != nil {
+		log.Println("ERROR adding symmetric contact: ", result.Error.Error())
+		// Don't return an error here, since the contact was already added
 	}
 	return &pb.AddContactResponse{
 		Status: http.StatusCreated,
@@ -112,8 +122,9 @@ func (s *Server) FetchContacts(ctx context.Context, req *pb.FetchContactsRequest
 			}, nil
 		}
 		responseContacts = append(responseContacts, &pb.UserContact{
-			UserId: contactUser.UserId,
-			Handle: contactUser.Handle,
+			UserId:   contactUser.UserId,
+			Handle:   contactUser.Handle,
+			Approved: &contact.Approved,
 		})
 	}
 	return &pb.FetchContactsResponse{
