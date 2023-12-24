@@ -152,7 +152,11 @@ func (s *Server) CreateChat(ctx context.Context, req *pb.CreateChatRequest) (*pb
 
 func (s *Server) FindChat(ctx context.Context, req *pb.FindChatRequest) (*pb.FindChatResponse, error) {
 	var chat models.Chat
-	if result := s.H.DB.First(&chat, req.User1Id, req.User2Id); result.Error != nil {
+	if result := s.H.DB.Where(
+		"user1_id=? AND user2_id=?", req.User1Id, req.User2Id,
+	).Or(
+		"user1_id=? AND user2_id=?", req.User2Id, req.User1Id,
+	).First(&chat); result.Error != nil {
 		return &pb.FindChatResponse{
 			Status: http.StatusNotFound,
 			Error:  result.Error.Error(),
