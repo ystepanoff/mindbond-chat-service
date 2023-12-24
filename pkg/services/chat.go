@@ -62,7 +62,8 @@ func (s *Server) AddContact(ctx context.Context, req *pb.AddContactRequest) (*pb
 		// Don't return an error here, since the contact was already added
 	}
 	return &pb.AddContactResponse{
-		Status: http.StatusCreated,
+		Status:    http.StatusCreated,
+		ContactId: contactUser.UserId,
 	}, nil
 }
 
