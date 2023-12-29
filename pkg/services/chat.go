@@ -203,20 +203,36 @@ func (s *Server) DeleteChat(ctx context.Context, req *pb.DeleteChatRequest) (*pb
 }
 
 func (s *Server) AddMessage(ctx context.Context, req *pb.AddMessageRequest) (*pb.AddMessageResponse, error) {
+	fmt.Println(req)
 	var chat models.Chat
 	var message models.Message
-	if result := s.H.DB.First(&chat, req.UserFromId, req.UserToId); result.Error == nil {
-		message.ChatId = chat.Id
-	} else if result := s.H.DB.First(&chat, req.UserToId, req.UserFromId); result.Error == nil {
-		message.ChatId = chat.Id
-	} else {
+	if result := s.H.DB.Where(
+		"user1_id=? AND user2_id=?", req.UserFromId, req.UserToId,
+	).Or(
+		"user1_id=? AND user2_id=?", req.UserToId, req.UserFromId,
+	).First(&chat); result.Error != nil {
 		return &pb.AddMessageResponse{
 			Status: http.StatusNotFound,
-			Error:  "Chat entity does not exist",
+			Error:  result.Error.Error(),
 		}, nil
 	}
+	userFrom, err := s.AuthClient.LookupById(req.UserFromId)
+	if err != nil || userFrom.Status != http.StatusOK {
+		return &pb.AddMessageResponse{
+			Status: http.StatusInternalServerError,
+			Error:  fmt.Sprintf("Lookup error"),
+		}, nil
+	}
+	userTo, err := s.AuthClient.LookupById(req.UserToId)
+	if err != nil || userTo.Status != http.StatusOK {
+		return &pb.AddMessageResponse{
+			Status: http.StatusInternalServerError,
+			Error:  fmt.Sprintf("Lookup error"),
+		}, nil
+	}
+
 	message.Original = req.Message
-	result, err := s.TranslatorClient.Translate(req.Message, req.UserFromLanguage, req.UserToLanguage)
+	result, err := s.TranslatorClient.Translate(req.Message, userFrom.Language, userTo.Language)
 	if err != nil {
 		return &pb.AddMessageResponse{
 			Status: http.StatusBadRequest,
