@@ -231,6 +231,7 @@ func (s *Server) AddMessage(ctx context.Context, req *pb.AddMessageRequest) (*pb
 		}, nil
 	}
 
+	message.ChatId = chat.Id
 	message.Original = req.Message
 	result, err := s.TranslatorClient.Translate(req.Message, userFrom.Language, userTo.Language)
 	if err != nil {
