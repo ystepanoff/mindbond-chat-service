@@ -17,6 +17,8 @@ type Chat struct {
 
 type Message struct {
 	ChatId      int64  `json:"chat_id" gorm:"references:Chat,constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	User1Id     int64  `json:"user1Id"`
+	User2Id     int64  `json:"user2Id"`
 	Original    string `json:"original"`
 	Translation string `json:"translation"`
 }

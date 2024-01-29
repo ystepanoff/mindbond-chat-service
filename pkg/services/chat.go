@@ -203,7 +203,6 @@ func (s *Server) DeleteChat(ctx context.Context, req *pb.DeleteChatRequest) (*pb
 }
 
 func (s *Server) AddMessage(ctx context.Context, req *pb.AddMessageRequest) (*pb.AddMessageResponse, error) {
-	fmt.Println(req)
 	var chat models.Chat
 	var message models.Message
 	if result := s.H.DB.Where(
@@ -232,6 +231,8 @@ func (s *Server) AddMessage(ctx context.Context, req *pb.AddMessageRequest) (*pb
 	}
 
 	message.ChatId = chat.Id
+	message.User1Id = req.UserFromId
+	message.User2Id = req.UserToId
 	message.Original = req.Message
 	result, err := s.TranslatorClient.Translate(req.Message, userFrom.Language, userTo.Language)
 	if err != nil {
