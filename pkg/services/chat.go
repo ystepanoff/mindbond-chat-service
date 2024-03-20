@@ -253,7 +253,7 @@ func (s *Server) AddMessage(ctx context.Context, req *pb.AddMessageRequest) (*pb
 	}, nil
 }
 
-func (s *Server) FetchMessages(ctx context.Context, req *pb.FetchMessagesRequest) (*pb., error) {
+func (s *Server) FetchMessages(ctx context.Context, req *pb.FetchMessagesRequest) (*pb.FetchMessageResponse, error) {
 	var chat models.Chat
 	var message models.Message
 	if result := s.H.DB.Where(
@@ -261,7 +261,7 @@ func (s *Server) FetchMessages(ctx context.Context, req *pb.FetchMessagesRequest
 	).Or(
 		"user1_id=? AND user2_id=?", req.UserToId, req.UserFromId,
 	).First(&chat); result.Error != nil {
-		return &pb.FetchMessagesRe{
+		return &pb.FetchMessageResponse{
 			Status: http.StatusNotFound,
 			Error:  result.Error.Error(),
 		}, nil
