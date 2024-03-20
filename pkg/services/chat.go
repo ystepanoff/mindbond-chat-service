@@ -135,6 +135,12 @@ func (s *Server) FetchContacts(ctx context.Context, req *pb.FetchContactsRequest
 }
 
 func (s *Server) CreateChat(ctx context.Context, req *pb.CreateChatRequest) (*pb.CreateChatResponse, error) {
+	if result, err := s.AuthClient.Validate(req.Token); err != nil || result.Status != http.StatusOK {
+		return &pb.CreateChatResponse{
+			Status: http.StatusUnauthorized,
+			Error:  fmt.Sprintf("Validation error: %s", result.Status),
+		}, nil
+	}
 	var chat models.Chat
 	chat.User1ID = req.User1Id
 	chat.User2ID = req.User2Id
@@ -255,15 +261,29 @@ func (s *Server) AddMessage(ctx context.Context, req *pb.AddMessageRequest) (*pb
 
 func (s *Server) FetchMessages(ctx context.Context, req *pb.FetchMessagesRequest) (*pb.FetchMessageResponse, error) {
 	var chat models.Chat
-	var message models.Message
+	var messages []models.Message
 	if result := s.H.DB.Where(
 		"user1_id=? AND user2_id=?", req.UserFromId, req.UserToId,
 	).Or(
 		"user1_id=? AND user2_id=?", req.UserToId, req.UserFromId,
 	).First(&chat); result.Error != nil {
-		return &pb.FetchMessageResponse{
+		return &pb.FetchMessagesResponse{
 			Status: http.StatusNotFound,
 			Error:  result.Error.Error(),
+		}, nil
+	}
+	userFrom, err := s.AuthClient.LookupById(req.UserFromId)
+	if err != nil || userFrom.Status != http.StatusOK {
+		return &pb.AddMessageResponse{
+			Status: http.StatusInternalServerError,
+			Error:  fmt.Sprintf("Lookup error"),
+		}, nil
+	}
+	userTo, err := s.AuthClient.LookupById(req.UserToId)
+	if err != nil || userTo.Status != http.StatusOK {
+		return &pb.AddMessageResponse{
+			Status: http.StatusInternalServerError,
+			Error:  fmt.Sprintf("Lookup error"),
 		}, nil
 	}
 }
