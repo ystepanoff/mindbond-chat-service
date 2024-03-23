@@ -1306,7 +1306,7 @@ var file_proto_chat_proto_rawDesc = []byte{
 	0x0e, 0x75, 0x73, 0x65, 0x72, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x6c, 0x61, 0x74, 0x65, 0x64, 0x12,
 	0x1e, 0x0a, 0x0a, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x6c, 0x61, 0x74, 0x65, 0x64, 0x18, 0x04, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x0a, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x6c, 0x61, 0x74, 0x65, 0x64, 0x32,
-	0xee, 0x03, 0x0a, 0x0b, 0x43, 0x68, 0x61, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12,
+	0xba, 0x04, 0x0a, 0x0b, 0x43, 0x68, 0x61, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12,
 	0x41, 0x0a, 0x0a, 0x41, 0x64, 0x64, 0x43, 0x6f, 0x6e, 0x74, 0x61, 0x63, 0x74, 0x12, 0x17, 0x2e,
 	0x63, 0x68, 0x61, 0x74, 0x2e, 0x41, 0x64, 0x64, 0x43, 0x6f, 0x6e, 0x74, 0x61, 0x63, 0x74, 0x52,
 	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x41, 0x64,
@@ -1337,7 +1337,12 @@ var file_proto_chat_proto_rawDesc = []byte{
 	0x61, 0x74, 0x2e, 0x41, 0x64, 0x64, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71,
 	0x75, 0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x41, 0x64, 0x64, 0x4d,
 	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00,
-	0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x12, 0x4a, 0x0a, 0x0d, 0x46, 0x65, 0x74, 0x63, 0x68, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
+	0x73, 0x12, 0x1a, 0x2e, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x46, 0x65, 0x74, 0x63, 0x68, 0x43, 0x6f,
+	0x6e, 0x74, 0x61, 0x63, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1b, 0x2e,
+	0x63, 0x68, 0x61, 0x74, 0x2e, 0x46, 0x65, 0x74, 0x63, 0x68, 0x43, 0x6f, 0x6e, 0x74, 0x61, 0x63,
+	0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x06, 0x5a, 0x04,
+	0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1385,15 +1390,17 @@ var file_proto_chat_proto_depIdxs = []int32{
 	10, // 7: chat.ChatService.FindChat:input_type -> chat.FindChatRequest
 	12, // 8: chat.ChatService.DeleteChat:input_type -> chat.DeleteChatRequest
 	14, // 9: chat.ChatService.AddMessage:input_type -> chat.AddMessageRequest
-	1,  // 10: chat.ChatService.AddContact:output_type -> chat.AddContactResponse
-	3,  // 11: chat.ChatService.RemoveContact:output_type -> chat.RemoveContactResponse
-	5,  // 12: chat.ChatService.FetchContacts:output_type -> chat.FetchContactsResponse
-	8,  // 13: chat.ChatService.CreateChat:output_type -> chat.CreateChatResponse
-	11, // 14: chat.ChatService.FindChat:output_type -> chat.FindChatResponse
-	13, // 15: chat.ChatService.DeleteChat:output_type -> chat.DeleteChatResponse
-	15, // 16: chat.ChatService.AddMessage:output_type -> chat.AddMessageResponse
-	10, // [10:17] is the sub-list for method output_type
-	3,  // [3:10] is the sub-list for method input_type
+	4,  // 10: chat.ChatService.FetchMessages:input_type -> chat.FetchContactsRequest
+	1,  // 11: chat.ChatService.AddContact:output_type -> chat.AddContactResponse
+	3,  // 12: chat.ChatService.RemoveContact:output_type -> chat.RemoveContactResponse
+	5,  // 13: chat.ChatService.FetchContacts:output_type -> chat.FetchContactsResponse
+	8,  // 14: chat.ChatService.CreateChat:output_type -> chat.CreateChatResponse
+	11, // 15: chat.ChatService.FindChat:output_type -> chat.FindChatResponse
+	13, // 16: chat.ChatService.DeleteChat:output_type -> chat.DeleteChatResponse
+	15, // 17: chat.ChatService.AddMessage:output_type -> chat.AddMessageResponse
+	5,  // 18: chat.ChatService.FetchMessages:output_type -> chat.FetchContactsResponse
+	11, // [11:19] is the sub-list for method output_type
+	3,  // [3:11] is the sub-list for method input_type
 	3,  // [3:3] is the sub-list for extension type_name
 	3,  // [3:3] is the sub-list for extension extendee
 	0,  // [0:3] is the sub-list for field type_name
@@ -1674,6 +1681,7 @@ type ChatServiceClient interface {
 	FindChat(ctx context.Context, in *FindChatRequest, opts ...grpc.CallOption) (*FindChatResponse, error)
 	DeleteChat(ctx context.Context, in *DeleteChatRequest, opts ...grpc.CallOption) (*DeleteChatResponse, error)
 	AddMessage(ctx context.Context, in *AddMessageRequest, opts ...grpc.CallOption) (*AddMessageResponse, error)
+	FetchMessages(ctx context.Context, in *FetchContactsRequest, opts ...grpc.CallOption) (*FetchContactsResponse, error)
 }
 
 type chatServiceClient struct {
@@ -1747,6 +1755,15 @@ func (c *chatServiceClient) AddMessage(ctx context.Context, in *AddMessageReques
 	return out, nil
 }
 
+func (c *chatServiceClient) FetchMessages(ctx context.Context, in *FetchContactsRequest, opts ...grpc.CallOption) (*FetchContactsResponse, error) {
+	out := new(FetchContactsResponse)
+	err := c.cc.Invoke(ctx, "/chat.ChatService/FetchMessages", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ChatServiceServer is the server API for ChatService service.
 type ChatServiceServer interface {
 	AddContact(context.Context, *AddContactRequest) (*AddContactResponse, error)
@@ -1756,6 +1773,7 @@ type ChatServiceServer interface {
 	FindChat(context.Context, *FindChatRequest) (*FindChatResponse, error)
 	DeleteChat(context.Context, *DeleteChatRequest) (*DeleteChatResponse, error)
 	AddMessage(context.Context, *AddMessageRequest) (*AddMessageResponse, error)
+	FetchMessages(context.Context, *FetchContactsRequest) (*FetchContactsResponse, error)
 }
 
 // UnimplementedChatServiceServer can be embedded to have forward compatible implementations.
@@ -1782,6 +1800,9 @@ func (*UnimplementedChatServiceServer) DeleteChat(context.Context, *DeleteChatRe
 }
 func (*UnimplementedChatServiceServer) AddMessage(context.Context, *AddMessageRequest) (*AddMessageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddMessage not implemented")
+}
+func (*UnimplementedChatServiceServer) FetchMessages(context.Context, *FetchContactsRequest) (*FetchContactsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchMessages not implemented")
 }
 
 func RegisterChatServiceServer(s *grpc.Server, srv ChatServiceServer) {
@@ -1914,6 +1935,24 @@ func _ChatService_AddMessage_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ChatService_FetchMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FetchContactsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).FetchMessages(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chat.ChatService/FetchMessages",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).FetchMessages(ctx, req.(*FetchContactsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _ChatService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "chat.ChatService",
 	HandlerType: (*ChatServiceServer)(nil),
@@ -1945,6 +1984,10 @@ var _ChatService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddMessage",
 			Handler:    _ChatService_AddMessage_Handler,
+		},
+		{
+			MethodName: "FetchMessages",
+			Handler:    _ChatService_FetchMessages_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
