@@ -221,7 +221,6 @@ func (s *Server) DeleteChat(ctx context.Context, req *pb.DeleteChatRequest) (*pb
 }
 
 func (s *Server) AddMessage(ctx context.Context, req *pb.AddMessageRequest) (*pb.AddMessageResponse, error) {
-	fmt.Println(req.Token)
 	if result, err := s.AuthClient.Validate(req.Token); err != nil || result.Status != http.StatusOK {
 		return &pb.AddMessageResponse{
 			Status: http.StatusUnauthorized,
@@ -317,10 +316,17 @@ func (s *Server) FetchMessages(ctx context.Context, req *pb.FetchMessagesRequest
 			Error:  fmt.Sprintf("DB error: %s", result.Error.Error()),
 		}, nil
 	}
-	//for _, message := range messages {
-	//
-	//}
+	var responseMessages []*pb.Message
+	for _, message := range messages {
+		responseMessages = append(responseMessages, &pb.Message{
+			UserOriginal:   message.User1Id,
+			Original:       message.Original,
+			UserTranslated: message.User2Id,
+			Translated:     message.Translation,
+		})
+	}
 	return &pb.FetchMessagesResponse{
-		Status: http.StatusOK,
+		Status:   http.StatusOK,
+		Messages: responseMessages,
 	}, nil
 }
