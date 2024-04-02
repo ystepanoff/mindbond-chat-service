@@ -273,7 +273,8 @@ func (s *Server) AddMessage(ctx context.Context, req *pb.AddMessageRequest) (*pb
 		}, nil
 	}
 	return &pb.AddMessageResponse{
-		Status: http.StatusOK,
+		Status:      http.StatusOK,
+		Translation: result.Translation,
 	}, nil
 }
 
