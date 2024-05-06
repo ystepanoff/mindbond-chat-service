@@ -72,14 +72,14 @@ func (s *Server) RemoveContact(ctx context.Context, req *pb.RemoveContactRequest
 	if result, err := s.AuthClient.Validate(req.Token); err != nil || result.Status != http.StatusOK {
 		return &pb.RemoveContactResponse{
 			Status: http.StatusInternalServerError,
-			Error:  fmt.Sprintf("Validation error: %s", result.Status),
+			Error:  fmt.Sprintf("Validation error: %d", result.Status),
 		}, nil
 	}
 	contactUser, err := s.AuthClient.LookupByHandle(req.Handle)
 	if err != nil || contactUser.Status != http.StatusOK {
 		return &pb.RemoveContactResponse{
 			Status: http.StatusInternalServerError,
-			Error:  fmt.Sprintf("Lookup error: %s", contactUser.Status),
+			Error:  fmt.Sprintf("Lookup error: %d", contactUser.Status),
 		}, nil
 	}
 	if result := s.H.DB.First(&contact, req.UserId, contactUser.UserId); result.Error != nil {
@@ -105,7 +105,7 @@ func (s *Server) FetchContacts(ctx context.Context, req *pb.FetchContactsRequest
 	if result, err := s.AuthClient.Validate(req.Token); err != nil || result.Status != http.StatusOK {
 		return &pb.FetchContactsResponse{
 			Status: http.StatusUnauthorized,
-			Error:  fmt.Sprintf("Validation error: %s", result.Status),
+			Error:  fmt.Sprintf("Validation error: %d", result.Status),
 		}, nil
 	}
 	if result := s.H.DB.Find(&contacts, req.UserId); result.Error != nil {
@@ -119,7 +119,7 @@ func (s *Server) FetchContacts(ctx context.Context, req *pb.FetchContactsRequest
 		if err != nil || contactUser.Status != http.StatusOK {
 			return &pb.FetchContactsResponse{
 				Status: http.StatusInternalServerError,
-				Error:  fmt.Sprintf("Lookup error: %s", contactUser.Status),
+				Error:  fmt.Sprintf("Lookup error: %d", contactUser.Status),
 			}, nil
 		}
 		responseContacts = append(responseContacts, &pb.UserContact{
@@ -138,7 +138,7 @@ func (s *Server) CreateChat(ctx context.Context, req *pb.CreateChatRequest) (*pb
 	if result, err := s.AuthClient.Validate(req.Token); err != nil || result.Status != http.StatusOK {
 		return &pb.CreateChatResponse{
 			Status: http.StatusUnauthorized,
-			Error:  fmt.Sprintf("Validation error: %s", result.Status),
+			Error:  fmt.Sprintf("Validation error: %d", result.Status),
 		}, nil
 	}
 	var chat models.Chat
@@ -160,7 +160,7 @@ func (s *Server) FindChat(ctx context.Context, req *pb.FindChatRequest) (*pb.Fin
 	if result, err := s.AuthClient.Validate(req.Token); err != nil || result.Status != http.StatusOK {
 		return &pb.FindChatResponse{
 			Status: http.StatusUnauthorized,
-			Error:  fmt.Sprintf("Validation error: %s", result.Status),
+			Error:  fmt.Sprintf("Validation error: %d", result.Status),
 		}, nil
 	}
 	var chat models.Chat
@@ -193,7 +193,7 @@ func (s *Server) DeleteChat(ctx context.Context, req *pb.DeleteChatRequest) (*pb
 	if result, err := s.AuthClient.Validate(req.Token); err != nil || result.Status != http.StatusOK {
 		return &pb.DeleteChatResponse{
 			Status: http.StatusUnauthorized,
-			Error:  fmt.Sprintf("Validation error: %s", result.Status),
+			Error:  fmt.Sprintf("Validation error: %d", result.Status),
 		}, nil
 	}
 	var chat models.Chat
@@ -224,7 +224,7 @@ func (s *Server) AddMessage(ctx context.Context, req *pb.AddMessageRequest) (*pb
 	if result, err := s.AuthClient.Validate(req.Token); err != nil || result.Status != http.StatusOK {
 		return &pb.AddMessageResponse{
 			Status: http.StatusUnauthorized,
-			Error:  fmt.Sprintf("Validation error: %s", result.Status),
+			Error:  fmt.Sprintf("Validation error: %d", result.Status),
 		}, nil
 	}
 	var chat models.Chat
@@ -282,7 +282,7 @@ func (s *Server) FetchMessages(ctx context.Context, req *pb.FetchMessagesRequest
 	if result, err := s.AuthClient.Validate(req.Token); err != nil || result.Status != http.StatusOK {
 		return &pb.FetchMessagesResponse{
 			Status: http.StatusUnauthorized,
-			Error:  fmt.Sprintf("Validation error: %s", result.Status),
+			Error:  fmt.Sprintf("Validation error: %d", result.Status),
 		}, nil
 	}
 	var chat models.Chat
