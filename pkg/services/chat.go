@@ -23,7 +23,7 @@ func (s *Server) AddContact(ctx context.Context, req *pb.AddContactRequest) (*pb
 	if result, err := s.AuthClient.Validate(req.Token); err != nil || result.Status != http.StatusOK {
 		return &pb.AddContactResponse{
 			Status: http.StatusInternalServerError,
-			Error:  fmt.Sprintf("Validation error: %s", result.Status),
+			Error:  fmt.Sprintf("Validation error: %d", result.Status),
 		}, nil
 	}
 	contactUser, err := s.AuthClient.LookupByHandle(req.Handle)
